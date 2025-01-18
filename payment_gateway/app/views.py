@@ -51,18 +51,16 @@ def callback(req):
         if not verify_signature(req.POST):
             order.status = PaymentStatus.SUCCESS
             order.save()
-            return render(req, "callback.html", context={"status": order.status})  # Callback giving HTML page
-            # or return redirect(function name of callback giving html page)
+            return render(req, "callback.html", context={"status": order.status})  
         else:
             order.status = PaymentStatus.FAILURE
             order.save()
-            return render(req, "callback.html", context={"status": order.status})  # Callback giving HTML page
-            # or return redirect(function name of callback giving html page)
+            return render(req, "callback.html", context={"status": order.status}) 
     else:
-        payment_id = json.loads(req.POST.get("error[metadata]", "")).get("payment_id")
-        provider_order_id = json.loads(req.POST.get("error[metadata]", "")).get("order_id")
+        payment_id = json.loads(req.POST.get("error[metadata]")).get("payment_id")
+        provider_order_id = json.loads(req.POST.get("error[metadata]")).get("order_id")
         order = Order.objects.get(provider_order_id=provider_order_id)
         order.payment_id = payment_id
         order.status = PaymentStatus.FAILURE
         order.save()
-        return render(req, "callback.html", context={"status": order.status})  # Callback giving HTML page
+        return render(req, "callback.html", context={"status": order.status}) 
